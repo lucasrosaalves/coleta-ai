@@ -1,0 +1,7 @@
+fastapi
+pydantic
+sqlmodel
+black
+flake8
+sqlalchemy
+uvicorn

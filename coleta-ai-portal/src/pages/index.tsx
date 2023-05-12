@@ -1,5 +1,5 @@
-import AppDrawer from "@/components/AppDrawer";
 import * as React from "react";
+import Link from "next/link";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
@@ -26,8 +26,9 @@ const MediaCard = () => {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small">Share</Button>
-        <Button size="small">Learn More</Button>
+        <Button size="small">
+          <Link href="/product">Detalhes</Link>
+        </Button>
       </CardActions>
     </Card>
   );
@@ -35,16 +36,14 @@ const MediaCard = () => {
 
 export default function Home() {
   return (
-    <AppDrawer>
-      <Grid container spacing={2}>
-        {[1, 2, 3, 5, 6].map((key) => {
-          return (
-            <Grid item xs={3} key={key} >
-              <MediaCard />
-            </Grid>
-          );
-        })}
-      </Grid>
-    </AppDrawer>
+    <Grid container spacing={2}>
+      {[1, 2, 3, 5, 6].map((key) => {
+        return (
+          <Grid item xs={3} key={key}>
+            <MediaCard />
+          </Grid>
+        );
+      })}
+    </Grid>
   );
 }

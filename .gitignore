@@ -1,19 +1,21 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
-/node_modules
-/.pnp
+# dependenci
+/coleta-ai-portal/node_modules
+/coleta-ai-api/.venv
+/coleta-ai-portal/.pnp
+/coleta-ai-portal/.pnp
 .pnp.js
 
 # testing
 /coverage
 
 # next.js
-/.next/
-/out/
+/coleta-ai-portal/.next/
+/coleta-ai-portal/out/
 
 # production
-/build
+/coleta-ai-portal/build
 
 # misc
 .DS_Store
@@ -33,3 +35,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+

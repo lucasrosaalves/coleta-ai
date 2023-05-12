@@ -1,4 +1,5 @@
 import * as React from "react";
+import Link from "next/link";
 import { ReactNode } from "react";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -14,8 +15,11 @@ interface AppDrawerProps {
 }
 
 export default function AppDrawer({ children }: AppDrawerProps) {
-  const navItems = ["Home", "About", "Contact"];
-
+  const navItems = [
+    { name: "Home", route: "/" },
+    { name: "About", route: "/" },
+    { name: "Contact", route: "/" },
+  ];
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -26,8 +30,10 @@ export default function AppDrawer({ children }: AppDrawerProps) {
           </Typography>
           <Box>
             {navItems.map((item) => (
-              <Button key={item} sx={{ color: "#fff" }}>
-                {item}
+              <Button key={item.name} sx={{ color: "#fff" }}>
+                <Link href={item.route} style={{ color: "white" }}>
+                  {item.name}
+                </Link>
               </Button>
             ))}
           </Box>
