@@ -6,7 +6,12 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { Grid } from "@mui/material";
+import { Grid, Tab, Tabs } from "@mui/material";
+import PhoneIcon from "@mui/icons-material/Phone";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import PersonPinIcon from "@mui/icons-material/PersonPin";
+import { ProductCategory } from "@/entities/product-category";
+import { getProductCategories } from "@/services/product-category-service";
 
 const MediaCard = () => {
   return (
@@ -35,8 +40,44 @@ const MediaCard = () => {
 };
 
 export default function Home() {
+  const [value, setValue] = React.useState(0);
+  const [productCategories, setProductCategories] = React.useState<
+    ProductCategory[]
+  >([]);
+
+  React.useEffect(() => {
+    getProductCategories().then((response) => {
+      setProductCategories(response ?? []);
+    });
+  });
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+  };
+
   return (
     <Grid container spacing={2}>
+      <Grid
+        item
+        xs={12}
+        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+      >
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          aria-label="icon label tabs example"
+        >
+          {productCategories.map((productCategory) => {
+            return (
+              <Tab
+                icon={<FavoriteIcon />}
+                label={productCategory.name}
+                key={productCategory.id}
+              />
+            );
+          })}
+        </Tabs>
+      </Grid>
+
       {[1, 2, 3, 5, 6].map((key) => {
         return (
           <Grid item xs={3} key={key}>
