@@ -8,6 +8,6 @@ class ProductResponse(BaseModel):
     name: str
     description: str
     product_category_id: int
-    quantity: str
+    quantity: int
     city_id: int
     created_at: datetime

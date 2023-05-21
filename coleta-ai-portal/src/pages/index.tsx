@@ -1,4 +1,3 @@
-import * as React from "react";
 import Link from "next/link";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
@@ -7,11 +6,18 @@ import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Grid, Tab, Tabs } from "@mui/material";
-import PhoneIcon from "@mui/icons-material/Phone";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import PersonPinIcon from "@mui/icons-material/PersonPin";
 import { ProductCategory } from "@/entities/product-category";
 import { getProductCategories } from "@/services/product-category-service";
+import {
+  GetServerSideProps,
+  GetServerSidePropsContext,
+  InferGetServerSidePropsType,
+} from "next";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { Product } from "@/entities/product";
+import { getProducts } from "@/services/product-service";
 
 const MediaCard = () => {
   return (
@@ -39,19 +45,47 @@ const MediaCard = () => {
   );
 };
 
-export default function Home() {
-  const [value, setValue] = React.useState(0);
-  const [productCategories, setProductCategories] = React.useState<
-    ProductCategory[]
-  >([]);
+export const getServerSideProps: GetServerSideProps<{
+  productCategories: ProductCategory[];
+  products: Product[];
+}> = async (context: GetServerSidePropsContext) => {
+  const { productCategoryId } = context.query;
+  const productCategories = await getProductCategories();
+  const products = productCategoryId
+    ? await getProducts(Number(productCategoryId))
+    : [];
 
-  React.useEffect(() => {
-    getProductCategories().then((response) => {
-      setProductCategories(response ?? []);
-    });
-  });
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+  return { props: { productCategories, products } };
+};
+
+export default function Home({
+  productCategories,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const router = useRouter();
+  const { productCategoryId } = router.query;
+
+  useEffect(() => {
+    if (!productCategoryId && productCategories.length > 0) {
+      router.push(`/?productCategoryId=${productCategories[0].id}`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productCategoryId, productCategories]);
+
+  const handleChange = (_: React.SyntheticEvent, value: number) => {
+    router.push(`/?productCategoryId=${value}`);
+  };
+
+  const defaultProductCategoryId =
+    productCategories.length > 0 ? productCategories[0].id : undefined;
+
+  const calculateTabValue = (): number | undefined => {
+    if (!productCategoryId) {
+      return defaultProductCategoryId;
+    }
+
+    return typeof productCategoryId === "string"
+      ? Number(productCategoryId)
+      : undefined;
   };
 
   return (
@@ -62,7 +96,7 @@ export default function Home() {
         sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
       >
         <Tabs
-          value={value}
+          value={calculateTabValue()}
           onChange={handleChange}
           aria-label="icon label tabs example"
         >
@@ -72,6 +106,7 @@ export default function Home() {
                 icon={<FavoriteIcon />}
                 label={productCategory.name}
                 key={productCategory.id}
+                value={productCategory.id}
               />
             );
           })}

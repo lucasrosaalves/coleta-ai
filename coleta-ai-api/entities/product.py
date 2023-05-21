@@ -8,7 +8,7 @@ class Product(SQLModel, table=True):
     name: str
     description: str
     product_category_id: int
-    quantity: str
+    quantity: int
     city_id: int
     user_id: int
     active: bool
