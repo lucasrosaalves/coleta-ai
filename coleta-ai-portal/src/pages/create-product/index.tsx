@@ -1,7 +1,9 @@
 import { ProductCategory } from "@/entities/product-category";
 import { getProductCategories } from "@/services/product-category-service";
 import {
+  Button,
   Card,
+  CardActions,
   CardContent,
   Grid,
   MenuItem,
@@ -78,8 +80,20 @@ export default function CreateProduct({
           <Grid item xs={12}>
             <TextField id="quantity" label="Quantidade" variant="outlined" />
           </Grid>
+          <Grid item xs={12}>
+            <Button variant="contained" component="label">
+              Upload File
+              <input type="file" hidden />
+            </Button>
+          </Grid>
         </Grid>
       </CardContent>
+      <CardActions sx={{ display: "flex", justifyContent: "flex-end" }}>
+        <Button size="small">Voltar</Button>
+        <Button size="small" variant="contained">
+          Salvar
+        </Button>
+      </CardActions>
     </Card>
   );
 }
