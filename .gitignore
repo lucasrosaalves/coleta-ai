@@ -36,3 +36,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+.vscode
+testing-project
+.mypy_cache
+poetry.lock
+dev-link/
+__pycache__

@@ -15,7 +15,7 @@ def run_migration() -> None:
 
     regions = _create_regions()
     for region in regions:
-        region_repository.inser_or_update(region)
+        region_repository.insert_or_update(region)
     regions = region_repository.get_regions()
 
     cities = _create_cities(regions)

@@ -54,16 +54,17 @@ export const getServerSideProps: GetServerSideProps<{
   const products = productCategoryId
     ? await getProducts(Number(productCategoryId))
     : [];
-
+  console.log(products);
   return { props: { productCategories, products } };
 };
 
 export default function Home({
   productCategories,
+  products,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
   const { productCategoryId } = router.query;
-
+  console.log(products);
   useEffect(() => {
     if (!productCategoryId && productCategories.length > 0) {
       router.push(`/?productCategoryId=${productCategories[0].id}`);
