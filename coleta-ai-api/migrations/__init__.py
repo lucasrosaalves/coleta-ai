@@ -21,8 +21,8 @@ def run_migration() -> None:
     cities = _create_cities(regions)
     for city in cities:
         city_repository.insert_or_update(city)
-    
-    
+
+
 def _create_product_categories() -> List[ProductCategory]:
     return [
         ProductCategory(name="Matéria Orgânica"),
@@ -35,12 +35,17 @@ def _create_product_categories() -> List[ProductCategory]:
         ProductCategory(name="Rejeitos"),
     ]
 
+
 def _create_regions() -> List[Region]:
-    return [
-        Region(name="Rio de Janeiro")
-    ]
+    return [Region(name="Rio de Janeiro")]
+
 
 def _create_cities(regions: List[Region]) -> List[City]:
     return [
-        City(name="Petrópolis", region_id=[region.id for region in regions if region.name == "Rio de Janeiro"][0])
+        City(
+            name="Petrópolis",
+            region_id=[
+                region.id for region in regions if region.name == "Rio de Janeiro"
+            ][0],
+        )
     ]

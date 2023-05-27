@@ -1,5 +1,6 @@
 import { apiUrl } from "@/constants/api";
 import { Product } from "@/entities/product";
+import { CreateProductRequest } from "@/requests/create-product-request";
 
 export const getProducts = async (
   productCategoryId: number
@@ -17,6 +18,7 @@ export const getProducts = async (
       quantity,
       city_id,
       created_at,
+      pictures,
     }) => {
       return {
         id,
@@ -26,7 +28,22 @@ export const getProducts = async (
         quantity,
         cityId: city_id,
         createdAt: created_at,
+        pictures,
       };
     }
   );
+};
+
+export const createProduct = async (request: CreateProductRequest) => {
+  await fetch(`${apiUrl}/products`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      ...request,
+      product_category_id: request.selectedCategoryId,
+      city_id: request.selectedCityId,
+    }),
+  });
 };

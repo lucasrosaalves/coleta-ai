@@ -19,21 +19,20 @@ import { useEffect } from "react";
 import { Product } from "@/entities/product";
 import { getProducts } from "@/services/product-service";
 
-const MediaCard = () => {
+const MediaCard = ({ product }: { product: Product }) => {
   return (
     <Card>
       <CardMedia
-        sx={{ height: 140 }}
-        image="/static/images/cards/contemplative-reptile.jpg"
-        title="green iguana"
+        sx={{ height: 200 }}
+        image={product.pictures ? product.pictures[0] : ""}
+        title={product.name}
       />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          Lizard
+          {product.name}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Lizards are a widespread group of squamate reptiles, with over 6,000
-          species, ranging across all continents except Antarctica
+          {product.description}
         </Typography>
       </CardContent>
       <CardActions>
@@ -54,7 +53,6 @@ export const getServerSideProps: GetServerSideProps<{
   const products = productCategoryId
     ? await getProducts(Number(productCategoryId))
     : [];
-  console.log(products);
   return { props: { productCategories, products } };
 };
 
@@ -64,6 +62,7 @@ export default function Home({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
   const { productCategoryId } = router.query;
+
   console.log(products);
   useEffect(() => {
     if (!productCategoryId && productCategories.length > 0) {
@@ -114,10 +113,10 @@ export default function Home({
         </Tabs>
       </Grid>
 
-      {[1, 2, 3, 5, 6].map((key) => {
+      {products.map((product, idx) => {
         return (
-          <Grid item xs={3} key={key}>
-            <MediaCard />
+          <Grid item xs={4} key={`product-${idx}`}>
+            <MediaCard product={product} />
           </Grid>
         );
       })}

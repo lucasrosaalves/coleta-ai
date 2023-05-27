@@ -18,7 +18,9 @@ def get_products(product_category_id: int, limit: int, offset: int) -> List[Prod
         return session.exec(query).all()
 
 
-def insert_or_update(product: Product) -> None:
+def insert_or_update(product: Product) -> Product:
     with Session(engine) as session:
         session.add(product)
         session.commit()
+        session.refresh(product)
+        return product

@@ -6,4 +6,5 @@ export interface Product {
   quantity: number;
   cityId: number;
   createdAt: Date;
+  pictures: string[];
 }

@@ -10,4 +10,3 @@ class User(SQLModel, table=True):
     phone: str
     city_id: int
     active: str
-

@@ -11,3 +11,4 @@ class ProductResponse(BaseModel):
     quantity: int
     city_id: int
     created_at: datetime
+    pictures: List[str]

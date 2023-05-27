@@ -16,6 +16,7 @@ def get_cities_by_region_id(region_id: int) -> List[City]:
         query = select(City).where(City.region_id == region_id)
         return session.exec(query).all()
 
+
 def insert_or_update(city: City) -> None:
     with Session(engine) as session:
         session.add(city)

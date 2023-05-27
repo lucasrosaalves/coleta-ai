@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from migrations import run_migration
 from repositories import engine
 from requests.create_product_request import CreateProductRequest
-from services import product_category_service, product_service
+from services import product_category_service, product_service, city_service
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -11,7 +11,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*'],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -19,6 +19,7 @@ app.add_middleware(
 engine.create_metadata()
 
 run_migration()
+
 
 @app.get("/")
 def read_root():
@@ -38,6 +39,11 @@ def post_products(request: CreateProductRequest):
 @app.get("/productCategories")
 def get_product_categories():
     return product_category_service.get_product_categories()
+
+
+@app.get("/cities")
+def get_cities():
+    return city_service.get_cities()
 
 
 if __name__ == "__main__":
