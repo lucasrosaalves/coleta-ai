@@ -26,6 +26,11 @@ def read_root():
     return {"Hello": "World"}
 
 
+@app.get("/products/{id}")
+def get_product(id: int):
+    return product_service.get_product(id)
+
+
 @app.get("/products")
 def get_products(product_category_id: int, limit: int = 50, offset: int = 0):
     return product_service.get_products(product_category_id, limit, offset)

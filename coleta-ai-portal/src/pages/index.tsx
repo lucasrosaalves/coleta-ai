@@ -19,7 +19,7 @@ import { useEffect } from "react";
 import { Product } from "@/entities/product";
 import { getProducts } from "@/services/product-service";
 
-const MediaCard = ({ product }: { product: Product }) => {
+const ProductCard = ({ product }: { product: Product }) => {
   return (
     <Card>
       <CardMedia
@@ -37,7 +37,7 @@ const MediaCard = ({ product }: { product: Product }) => {
       </CardContent>
       <CardActions>
         <Button size="small">
-          <Link href="/product">Detalhes</Link>
+          <Link href={`/products/${product.id}`}>Detalhes</Link>
         </Button>
       </CardActions>
     </Card>
@@ -63,7 +63,6 @@ export default function Home({
   const router = useRouter();
   const { productCategoryId } = router.query;
 
-  console.log(products);
   useEffect(() => {
     if (!productCategoryId && productCategories.length > 0) {
       router.push(`/?productCategoryId=${productCategories[0].id}`);
@@ -116,7 +115,7 @@ export default function Home({
       {products.map((product, idx) => {
         return (
           <Grid item xs={4} key={`product-${idx}`}>
-            <MediaCard product={product} />
+            <ProductCard product={product} />
           </Grid>
         );
       })}

@@ -17,7 +17,7 @@ interface AppDrawerProps {
 export default function AppDrawer({ children }: AppDrawerProps) {
   const navItems = [
     { name: "Home", route: "/" },
-    { name: "Novo Produto", route: "/create-product" },
+    { name: "Novo Produto", route: "/products/create" },
     { name: "Contact", route: "/" },
   ];
   return (

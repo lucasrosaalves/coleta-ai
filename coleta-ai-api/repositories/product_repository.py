@@ -1,8 +1,14 @@
-from typing import List
+from typing import List, Optional
 from entities.product import Product
 from sqlmodel import Session, select
 
 from .engine import engine
+
+
+def get_product(id: int) -> Optional[Product]:
+    with Session(engine) as session:
+        query = select(Product).where(Product.id == id)
+        return session.exec(query).first()
 
 
 def get_products(product_category_id: int, limit: int, offset: int) -> List[Product]:

@@ -205,13 +205,13 @@ export default function CreateProduct({
             }}
           />
           <Button variant="contained" component="label">
-            Upload File
+            Adicionar Fotos
             <input
               type="file"
               hidden
               multiple={false}
               onChange={handleFilesChange}
-              accept=".png,.jpg"
+              accept=".png,.jpg,.jpeg"
             />
           </Button>
         </Box>

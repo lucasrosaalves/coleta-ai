@@ -1,10 +1,20 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from entities.product import Product
 from entities.product_picture import ProductPicture
 from repositories import product_repository, product_picture_repository
 from requests.create_product_request import CreateProductRequest
 from responses.product_response import ProductResponse
+
+
+def get_product(id: int) -> Optional[ProductResponse]:
+    entity = product_repository.get_product(id)
+    if entity is None:
+        return None
+    pictures = product_picture_repository.get_product_pictures(id)
+    return ProductResponse(
+        **entity.dict(), pictures=[picture.content for picture in pictures]
+    )
 
 
 def get_products(
