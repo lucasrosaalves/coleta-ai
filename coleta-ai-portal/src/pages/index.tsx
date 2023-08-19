@@ -9,15 +9,12 @@ import { Grid, Tab, Tabs } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { ProductCategory } from "@/entities/product-category";
 import { getProductCategories } from "@/services/product-category-service";
-import {
-  GetServerSideProps,
-  GetServerSidePropsContext,
-  InferGetServerSidePropsType,
-} from "next";
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Product } from "@/entities/product";
 import { getProducts } from "@/services/product-service";
+import { useIsAuthenticated } from "@/hooks/useIsAuthenticated";
 
 const ProductCard = ({ product }: { product: Product }) => {
   return (
@@ -44,31 +41,43 @@ const ProductCard = ({ product }: { product: Product }) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<{
-  productCategories: ProductCategory[];
-  products: Product[];
-}> = async (context: GetServerSidePropsContext) => {
-  const { productCategoryId } = context.query;
-  const productCategories = await getProductCategories();
-  const products = productCategoryId
-    ? await getProducts(Number(productCategoryId))
-    : [];
-  return { props: { productCategories, products } };
-};
-
-export default function Home({
-  productCategories,
-  products,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function Home() {
+  const searchParams = useSearchParams();
   const router = useRouter();
-  const { productCategoryId } = router.query;
+  const isAuthenticated = useIsAuthenticated();
+
+  const redirectToLogin = () => {
+    if (typeof window !== "undefined") {
+      router.push("/login");
+    }
+  };
+
+  if (!isAuthenticated) {
+    redirectToLogin();
+  }
+
+  const productCategoryId = searchParams.get("productCategoryId");
+  const [productCategories, setProductCategories] = useState<ProductCategory[]>(
+    []
+  );
+  const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    if (!productCategoryId && productCategories.length > 0) {
-      router.push(`/?productCategoryId=${productCategories[0].id}`);
+    getProductCategories().then((resp) => {
+      setProductCategories(resp);
+      if (resp.length == 0) {
+        return;
+      }
+      getProducts(resp[0].id).then(setProducts);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!productCategoryId) {
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [productCategoryId, productCategories]);
+    getProducts(Number(productCategoryId)).then(setProducts);
+  }, [productCategoryId]);
 
   const handleChange = (_: React.SyntheticEvent, value: number) => {
     router.push(`/?productCategoryId=${value}`);

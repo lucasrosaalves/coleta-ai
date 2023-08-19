@@ -1,8 +1,15 @@
+import hashlib
 from typing import List
 from entities.city import City
 from entities.product_category import ProductCategory
 from entities.region import Region
-from repositories import city_repository, product_category_repository, region_repository
+from entities.user import User
+from repositories import (
+    city_repository,
+    product_category_repository,
+    region_repository,
+    user_repository,
+)
 
 
 def run_migration() -> None:
@@ -21,6 +28,18 @@ def run_migration() -> None:
     cities = _create_cities(regions)
     for city in cities:
         city_repository.insert_or_update(city)
+
+    password = hashlib.md5(b"admin")
+    user_repository.insert_or_update(
+        User(
+            name="Admin",
+            email="admin@admin.com",
+            password=password.hexdigest(),
+            phone="(24)99000-0000",
+            city_id=1,
+            active=True,
+        )
+    )
 
 
 def _create_product_categories() -> List[ProductCategory]:

@@ -4,38 +4,59 @@ import { ProductCategory } from "@/entities/product-category";
 import { getCities } from "@/services/city-service";
 import { getProductCategories } from "@/services/product-category-service";
 import { getProduct } from "@/services/product-service";
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardMedia,
-  Typography,
-} from "@mui/material";
-import {
-  GetServerSideProps,
-  GetServerSidePropsContext,
-  InferGetServerSidePropsType,
-} from "next";
+import { useSearchParams, useRouter } from "next/navigation";
 
-export const getServerSideProps: GetServerSideProps<{
-  product: Product;
+import { Box, Card, CardContent, CardMedia, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useIsAuthenticated } from "@/hooks/useIsAuthenticated";
+
+type State = {
+  product?: Product;
   cities: City[];
   productCategories: ProductCategory[];
-}> = async (context: GetServerSidePropsContext) => {
-  const { id } = context.query;
-  const product = await getProduct(Number(id));
-  const cities = await getCities();
-  const productCategories = await getProductCategories();
-
-  return { props: { product, cities, productCategories } };
 };
 
-export default function ProductDetails({
-  product,
-  cities,
-  productCategories,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function ProductDetails() {
+  const isAuthenticated = useIsAuthenticated();
+  const router = useRouter();
+  const redirectToLogin = () => {
+    if (typeof window !== "undefined") {
+      router.push("/login");
+    }
+  };
+  if (!isAuthenticated) {
+    redirectToLogin();
+  }
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+
+  const [{ product, cities, productCategories }, setState] = useState<State>({
+    cities: [],
+    productCategories: [],
+    product: undefined,
+  });
+
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+    Promise.all([
+      getProduct(Number(id)),
+      getCities(),
+      getProductCategories(),
+    ]).then(([product, cities, productCategories]) => {
+      setState({
+        product,
+        cities,
+        productCategories,
+      });
+    });
+  }, [id]);
+
+  if (!product) {
+    return <></>;
+  }
+
   return (
     <Card
       variant="outlined"
@@ -72,9 +93,14 @@ export default function ProductDetails({
             {cities.find((p) => p.id === product.cityId)?.name}
           </Typography>
 
-          <Button variant="contained" component="label">
-            Coletar
-          </Button>
+          <Typography component="div">
+            Responsável:
+            {product.userName}
+          </Typography>
+          <Typography component="div">
+            Telefone:
+            {product.usePhone}
+          </Typography>
         </CardContent>
       </Box>
       <CardMedia

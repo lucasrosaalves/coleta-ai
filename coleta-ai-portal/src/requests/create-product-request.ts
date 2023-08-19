@@ -3,6 +3,6 @@ export type CreateProductRequest = {
   description: string;
   selectedCategoryId: number;
   selectedCityId: number;
-  quantity: number;
+  quantity?: number;
   picture: string;
 };

@@ -1,5 +1,6 @@
 import { City } from "@/entities/city";
 import { ProductCategory } from "@/entities/product-category";
+import { useIsAuthenticated } from "@/hooks/useIsAuthenticated";
 import { CreateProductRequest } from "@/requests/create-product-request";
 import { getCities } from "@/services/city-service";
 import { getProductCategories } from "@/services/product-category-service";
@@ -19,32 +20,48 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
-export const getServerSideProps: GetServerSideProps<{
-  productCategories: ProductCategory[];
-  cities: City[];
-}> = async () => {
-  const productCategories = await getProductCategories();
-  const cities = await getCities();
-  return { props: { productCategories, cities } };
-};
-
-export default function CreateProduct({
-  productCategories,
-  cities,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function CreateProduct() {
   const [state, setState] = useState<CreateProductRequest>({
     name: "",
     description: "",
     selectedCategoryId: 0,
     selectedCityId: 0,
-    quantity: 0,
     picture: "",
   });
+
+  const [{ productCategories, cities }, setOptions] = useState<{
+    productCategories: ProductCategory[];
+    cities: City[];
+  }>({
+    productCategories: [],
+    cities: [],
+  });
+
   const router = useRouter();
+  const isAuthenticated = useIsAuthenticated();
+  const redirectToLogin = () => {
+    if (typeof window !== "undefined") {
+      router.push("/login");
+    }
+  };
+  if (!isAuthenticated) {
+    redirectToLogin();
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const productCategories = await getProductCategories();
+      const cities = await getCities();
+      return [productCategories, cities];
+    };
+
+    fetchData().then(([productCategories, cities]) => {
+      setOptions({ productCategories, cities });
+    });
+  }, []);
 
   const handleFilesChange = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -72,6 +89,7 @@ export default function CreateProduct({
       state.description.length > 0 &&
       state.selectedCategoryId > 0 &&
       state.selectedCityId > 0 &&
+      state.quantity &&
       state.quantity > 0 &&
       state.picture.length > 0
     );
@@ -197,7 +215,6 @@ export default function CreateProduct({
             value={state.quantity}
             type="number"
             onChange={(e) => {
-              e.preventDefault();
               setState((prev) => ({
                 ...prev,
                 quantity: Number(e.target.value),

@@ -1,9 +1,17 @@
+from typing import Annotated
 import uvicorn
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, HTTPException, Header
+from entities.user import User
 from migrations import run_migration
 from repositories import engine
 from requests.create_product_request import CreateProductRequest
-from services import product_category_service, product_service, city_service
+from requests.login_request import LoginRequest
+from services import (
+    auth_service,
+    product_category_service,
+    product_service,
+    city_service,
+)
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -21,13 +29,27 @@ engine.create_metadata()
 run_migration()
 
 
+async def validate_auth(token: Annotated[str | None, Header()] = None):
+    if not token:
+        raise HTTPException(status_code=401, detail="Invalid user")
+    user = auth_service.extract_user_from_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid user")
+    return user
+
+
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
 
 
+@app.post("/login")
+def login(request: LoginRequest):
+    return auth_service.login(request)
+
+
 @app.get("/products/{id}")
-def get_product(id: int):
+def get_product(id: int, _: Annotated[User, Depends(validate_auth)]):
     return product_service.get_product(id)
 
 
@@ -37,8 +59,10 @@ def get_products(product_category_id: int, limit: int = 50, offset: int = 0):
 
 
 @app.post("/products")
-def post_products(request: CreateProductRequest):
-    return product_service.create_product(request)
+def post_products(
+    request: CreateProductRequest, user: Annotated[User, Depends(validate_auth)]
+):
+    return product_service.create_product(request, user.id)
 
 
 @app.get("/productCategories")

@@ -7,4 +7,6 @@ export interface Product {
   cityId: number;
   createdAt: Date;
   pictures: string[];
+  userName?: string;
+  usePhone?: string;
 }

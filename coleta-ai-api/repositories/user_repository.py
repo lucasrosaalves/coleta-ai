@@ -11,6 +11,12 @@ def get_user_by_id(user_id: int) -> Optional[User]:
         return session.exec(query).first()
 
 
+def get_user_by_email(user_email: str) -> Optional[User]:
+    with Session(engine) as session:
+        query = select(User).where(User.email == user_email)
+        return session.exec(query).first()
+
+
 def insert_or_update(user: User) -> None:
     with Session(engine) as session:
         session.add(user)
